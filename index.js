@@ -7,6 +7,7 @@ var awsRegion = process.env.AWS_REGION;
 var endpoint = process.env.ENDPOINT;
 var excludedIndices = (process.env.EXCLUDED_INDICES || '.kibana').split(/[ ,]/);
 var indexDate = moment.utc().subtract(+(process.env.MAX_INDEX_AGE || 14), 'days');
+var logLevel = process.env.LOG_LEVEL || 'info';
 
 if (awsRegion !== undefined) {
   var AWS = require('aws-sdk');
@@ -16,6 +17,7 @@ exports.handler = function(event, context, callback) {
   var config = {
     apiVersion: apiVersion,
     host: endpoint,
+    log: logLevel,
   };
 
   if (awsRegion !== undefined) {
