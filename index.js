@@ -4,10 +4,12 @@ var moment = require('moment');
 
 var apiVersion = process.env.API_VERSION;
 var awsRegion = process.env.AWS_REGION;
+var batchSize = parseInt(process.env.BATCH_SIZE) || 10;
 var endpoint = process.env.ENDPOINT;
 var excludedIndices = (process.env.EXCLUDED_INDICES || '.kibana').split(/[ ,]/);
 var indexDate = moment.utc().subtract(+(process.env.MAX_INDEX_AGE || 14), 'days');
 var logLevel = process.env.LOG_LEVEL || 'info';
+var timeout = process.env.ES_TIMEOUT;
 
 if (awsRegion !== undefined) {
   var AWS = require('aws-sdk');
@@ -18,6 +20,7 @@ exports.handler = function(event, context, callback) {
     apiVersion: apiVersion,
     host: endpoint,
     log: logLevel,
+    requestTimeout: timeout,
   };
 
   if (awsRegion !== undefined) {
@@ -56,7 +59,11 @@ function filterIndices(indices) {
 function deleteIndices(client) {
   return function(indices) {
     if (indices.length > 0) {
-      return client.indices.delete({index: indices}).then(function() {
+      promises = _.map(_.chunk(indices, batchSize), function (chunk) {
+        return client.indices.delete({ index: chunk });
+      });
+
+      return Promise.all(promises).then(function(succeeded) {
         return indices;
       });
     } else {
