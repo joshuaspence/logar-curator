@@ -52,7 +52,7 @@ function extractIndices(results) {
 
 function filterIndices(indices) {
   return indices.filter(function(index) {
-    return !isExcluded(index) && isTooOld(index);
+    return !isExcluded(index) && (isTooOld(index) || isTooNew(index));
   });
 }
 
@@ -90,4 +90,10 @@ function isExcluded(indexName) {
 function isTooOld(indexName) {
   var m = moment.utc(indexName, 'YYYY.MM.DD');
   return m.isBefore(indexDate);
+}
+
+function isTooNew(indexName) {
+  var maxDate = moment.utc().add(2, 'days');
+  var m = moment.utc(indexName, 'YYYY.MM.DD');
+  return m.isAfter(maxDate);
 }
