@@ -1,4 +1,4 @@
-var _ = require('elasticsearch/src/lib/utils');
+var _ = require('lodash');
 var elasticsearch = require('elasticsearch');
 var moment = require('moment');
 
@@ -24,7 +24,7 @@ exports.handler = function(event, context, callback) {
   };
 
   if (awsRegion !== undefined) {
-    config = _.deepMerge(config, {
+    config = _.merge(config, {
       amazonES: {
         credentials: new AWS.EnvironmentCredentials('AWS'),
         region: awsRegion,
@@ -43,11 +43,11 @@ exports.handler = function(event, context, callback) {
 }
 
 function getIndices(client) {
-  return client.indices.getAliases();
+  return client.cat.indices({h: ['index']});
 }
 
 function extractIndices(results) {
-  return Object.keys(results);
+  return results.split('\n')
 }
 
 function filterIndices(indices) {

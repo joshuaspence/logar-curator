@@ -10,8 +10,9 @@
   "author": "Marty Zalega <marty@zalega.me>",
   "license": "MIT",
   "dependencies": {
-    "elasticsearch": "^11.0.1",
+    "elasticsearch": "git+https://github.com/elastic/elasticsearch-js#adb3de5b3b56d2dd257e5af4204f4713e4ce55e4",
     "http-aws-es": "^1.1.3",
+    "lodash": "^4.17.4",
     "moment": "^2.12.0"
   }
 }
