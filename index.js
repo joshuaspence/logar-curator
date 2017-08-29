@@ -5,6 +5,7 @@ var moment = require('moment');
 var apiVersion = process.env.API_VERSION;
 var awsRegion = process.env.AWS_REGION;
 var batchSize = parseInt(process.env.BATCH_SIZE) || 10;
+var elasticsearchConnection = process.env.ELASTICSEARCH_CONNECTION;
 var endpoint = process.env.ENDPOINT;
 var excludedIndices = (process.env.EXCLUDED_INDICES || '.kibana').split(/[ ,]/);
 var indexDate = moment.utc().subtract(+(process.env.MAX_INDEX_AGE || 14), 'days');
@@ -23,7 +24,7 @@ exports.handler = function(event, context, callback) {
     requestTimeout: timeout,
   };
 
-  if (awsRegion !== undefined) {
+  if (elasticsearchConnection === 'aws' && awsRegion !== undefined) {
     config = _.merge(config, {
       amazonES: {
         credentials: new AWS.EnvironmentCredentials('AWS'),
